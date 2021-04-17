@@ -1,0 +1,22 @@
+{
+  "name": "orderh3",
+  "version": "1.0.0",
+  "description": "Useful tools for hash house harriers",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wescpdx/orderh3.git"
+  },
+  "author": "Wes Contreras",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/wescpdx/orderh3/issues"
+  },
+  "homepage": "https://github.com/wescpdx/orderh3#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
