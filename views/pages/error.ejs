@@ -11,7 +11,8 @@
 
 <main>
     <h1>Oops, something went wrong</h1>
-    <p>At some point, we'll have to explain what.</p>
+    <p><%= error.status %><br>
+    <%= error.stack %></p>
 </main>
 
     <%- include('../partials/footer'); %>
