@@ -6,12 +6,14 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const log = require('./bin/logger');
+const h3db = require('./bin/h3db');
+
+const app = express();
+
 
 // Passport for authentication
 const passport = require('passport');
 const StrategyGoogle = require('passport-google-oauth20').Strategy;
-
-const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views/pages'));
@@ -39,14 +41,12 @@ passport.use(new StrategyGoogle(
   },
   function(accessToken, refreshToken, profile, done) {
     log.logVerbose('app.passport: Access passport function');
-    //process.nextTick(function() {
-      log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
-      let authy = srdb.fetchUserByAuth('google', profile.id).then(function(usr) {
-        log.logVerbose('app.passport: u = ' + JSON.stringify(usr));
-        log.logVerbose('app.passport: u.id = ' + JSON.stringify(usr));
-        return done(null, usr);
-      });
-    //});
+    log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
+    let authy = h3db.fetchUserByAuth(profile.id).then(function(usr) {
+      log.logVerbose('app.passport: u = ' + JSON.stringify(usr));
+      log.logVerbose('app.passport: u.id = ' + JSON.stringify(usr));
+      return done(null, usr);
+    });
   }
 ));
 
