@@ -36,3 +36,6 @@ const h3db = {
   },
 
 };
+
+
+module.exports = h3db;
