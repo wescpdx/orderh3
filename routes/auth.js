@@ -9,11 +9,14 @@ router.get('/', function(req, res) {
     log.logVerbose('Authenticated, bouncing to homepage');
     res.redirect('/');
   } else {
+    res.redirect('/');
+    /**
     res.render('auth', {
       title: 'Login',
     auth: auth.isLoggedIn(req),
       user: auth.usernameExpress(req)
     });
+    **/
   }
 });
 

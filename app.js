@@ -42,7 +42,7 @@ passport.use(new StrategyGoogle(
   function(accessToken, refreshToken, profile, done) {
     log.logVerbose('app.passport: Access passport function');
     log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
-    let authy = h3db.fetchUserByAuth(profile.id).then(function(usr) {
+    h3db.fetchUserByAuth(profile.id).then(function(usr) {
       log.logVerbose('app.passport: u = ' + JSON.stringify(usr));
       log.logVerbose('app.passport: u.id = ' + JSON.stringify(usr));
       return done(null, usr);
@@ -82,6 +82,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.user = req.user;
 
   // render the error page
   res.status(err.status || 500);

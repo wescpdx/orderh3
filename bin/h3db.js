@@ -32,6 +32,7 @@ const h3db = {
       }
     } else {
       log.logError('h3db.fetchUserByAuth: Duplicate user records for key: ' + key);
+      return false;
     }
   },
 
