@@ -37,7 +37,7 @@ passport.use(new StrategyGoogle(
   {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://hashtracker-env.eba-sndv7kup.us-east-2.elasticbeanstalk.com/auth/google/callback'
+    callbackURL: `http://${process.env.LOCAL_DOMAIN}/auth/google/callback`,
   },
   function(accessToken, refreshToken, profile, done) {
     log.logVerbose('app.passport: Access passport function');
@@ -82,7 +82,9 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.locals.user = req.user;
+  if (req.user) {
+    res.locals.username =  req.user.name;
+  }
 
   // render the error page
   res.status(err.status || 500);
