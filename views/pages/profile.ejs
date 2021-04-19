@@ -25,6 +25,11 @@
       <input type="submit" value="Update" />
     </form>
 
+    <% if (user.permissions === "pending") { %>
+      <p>Your user account is created, but has not been given any permissions yet.
+        Please wait for an admin to review your account.</p>
+    <% } %>
+
 </main>
 
     <%- include('../partials/footer'); %>
