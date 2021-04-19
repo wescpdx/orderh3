@@ -12,10 +12,11 @@
 <main>
     <h1>Welcome to the Order of the H3</h1>
     <p>Our goal today is to track honors for Stumptown.</p>
-    <p><a href="/auth/google"><img src="/images/btn_google_signin_light_normal_web.png" /></a></p>
 
-    <p>Debug info:<br>
-      <%= debug %></p>
+    <% if (!loggedIn) { %>
+    <p><a href="/auth/google"><img src="/images/btn_google_signin_light_normal_web.png" /></a></p>
+    <% } %>
+
 </main>
 
     <%- include('../partials/footer'); %>

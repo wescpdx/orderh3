@@ -49,6 +49,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Vars to make available to all views
+app.use((req, res, next) => {
+  res.locals.loggedIn = !!req.user;  // So header can render correctly
+  next();
+})
+
 // Route handlers
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
