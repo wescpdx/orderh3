@@ -1,22 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const auth = require('../bin/auth-lib');
+const auth = require('../bin/auth');
 const log = require('../bin/logger');
 
 router.get('/', function(req, res) {
   if (req.isAuthenticated()) {
-    log.logVerbose('Authenticated, bouncing to homepage');
-    res.redirect('/');
+    log.logVerbose('Authenticated, bouncing to profile');
+    res.redirect('/profile');
   } else {
     res.redirect('/');
-    /**
-    res.render('auth', {
-      title: 'Login',
-    auth: auth.isLoggedIn(req),
-      user: auth.usernameExpress(req)
-    });
-    **/
   }
 });
 

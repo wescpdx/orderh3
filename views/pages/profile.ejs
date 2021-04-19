@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/header'); %>
+</header>
+
+<main>
+    <h1>User Profile</h1>
+    <p>Thank you for helping to keep our records up to date.</p>
+
+    <form target="_self" method="post">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" value="<%= user.name %>" />
+      <br>
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email" value="<%= user.email %>" />
+      <br>
+      Permissions: <%= user.permissions || 'None yet' %>
+      <br><br>
+      <input type="submit" value="Update" />
+    </form>
+
+</main>
+
+    <%- include('../partials/footer'); %>
+
+</body>
+</html>

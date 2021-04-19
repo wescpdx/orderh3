@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const log = require('./bin/logger');
-const h3db = require('./bin/h3db');
+const auth = require('./bin/auth');
 
 const app = express();
 
@@ -33,27 +33,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new StrategyGoogle(
-  {
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `http://${process.env.LOCAL_DOMAIN}/auth/google/callback`,
-  },
-  function(accessToken, refreshToken, profile, done) {
-    log.logVerbose('app.passport: Access passport function');
-    log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
-    h3db.fetchUserByAuth(profile.id).then(function(usr) {
-      log.logVerbose('app.passport: u = ' + JSON.stringify(usr));
-      log.logVerbose('app.passport: u.id = ' + JSON.stringify(usr));
-      return done(null, usr);
-    });
-  }
-));
-
+passport.use(new StrategyGoogle(auth.passportStategyConfig, auth.passportStrategyHandler));
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
-
 passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
@@ -69,6 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Route handlers
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
+app.use('/profile', require('./routes/profile'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

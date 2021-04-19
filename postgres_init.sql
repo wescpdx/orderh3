@@ -110,7 +110,8 @@ CREATE TABLE public.honor_delivery
 CREATE TYPE permissions AS ENUM
 (
   'data_entry',
-  'admin'
+  'admin',
+  'pending'
 );
 
 CREATE TABLE public.auth_user

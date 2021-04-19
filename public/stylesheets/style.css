@@ -1,8 +1,36 @@
 body {
+  margin-top: 40px;
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.navbar-nav {
+  background-color: cyan;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar * {
+  display: inline;
+  display: flex;
+  align-items: center;
+}
+
+.navbar li {
+  margin: 20px;
+}
+
+.navbar li a {
+    color: black;
+    text-decoration: none;
 }
