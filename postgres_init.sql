@@ -87,6 +87,7 @@ CREATE TABLE public.honor_def
   title       VARCHAR(100),
   kennel      INTEGER,
   type        honor_type,
+  num         INTEGER,
   created     TIMESTAMPTZ,
   updated     TIMESTAMPTZ,
 
@@ -125,3 +126,124 @@ CREATE TABLE public.auth_user
   created     TIMESTAMPTZ,
   updated     TIMESTAMPTZ
 );
+
+CREATE VIEW hasher_attendance
+AS
+SELECT k.id AS kennel_id, k.name AS kennel_name, h.id AS hasher_id, h.hash_name,
+ h.real_name, h.fb_name, COUNT(eh.event) AS hashes
+FROM hasher h
+JOIN event_hashers eh
+ ON eh.hasher = h.id
+JOIN event e
+ ON eh.event = e.id
+JOIN kennel k
+ ON e.kennel = k.id
+WHERE k.id = 3
+GROUP BY 1, 2, 3, 4, 5, 6;
+
+-- ==============================================================================
+-- RESET AND INSERT SAMPLE DATA
+-- ==============================================================================
+
+DELETE FROM honor_delivery;
+DELETE FROM honor_def;
+DELETE FROM event_hashers;
+DELETE FROM event_hares;
+DELETE FROM event_jedi;
+DELETE FROM hasher;
+DELETE FROM event;
+DELETE FROM kennel;
+
+INSERT INTO kennel
+(id, name) VALUES
+(1, 'Stumptown H3'),
+(2, 'Oregon H3'),
+(3, 'Test Kennel');
+
+INSERT INTO event
+(id, kennel, title, number, ev_date, location) VALUES
+(1, 3, 'Test first', 1, '2021-02-04', 'Gabriel Park'),
+(2, 3, 'Test second', 2, '2021-02-11', 'Albina Park'),
+(3, 3, 'Test third', 3, '2021-02-18', 'Downtown Portland'),
+(4, 3, 'Test fourth', 4, '2021-02-25', 'NE Portland'),
+(5, 3, 'Big number 5', 5, '2021-03-02', 'Someplace cool'),
+(6, 3, 'Magic six', 6, '2021-03-11', 'A bar or something'),
+(7, 3, '777', 7, '2021-03-18', 'Downtown Portland');
+
+INSERT INTO hasher
+(id, kennel, real_name, hash_name) VALUES
+(1, 3, 'Bob Smith', 'The Bobster'),
+(2, 3, 'Jane Doe', 'Nobody'),
+(3, 3, 'Jim Jones', 'Jimmy'),
+(4, 3, 'Sally Fields', 'Cookie Monsta'),
+(5, 3, 'Henry Cook', 'The HARE'),
+(6, 3, 'Frankie Prather', 'Chiller');
+
+INSERT INTO event_hashers
+(event, hasher) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(2, 1),
+(2, 3),
+(2, 4),
+(2, 6),
+(3, 1),
+(3, 2),
+(3, 5),
+(3, 6),
+(4, 1),
+(4, 4),
+(4, 5),
+(4, 6),
+(5, 1),
+(5, 2),
+(5, 3),
+(5, 5),
+(5, 6),
+(6, 1),
+(6, 2),
+(6, 5),
+(6, 6),
+(7, 1),
+(7, 2),
+(7, 3),
+(7, 5),
+(7, 6);
+
+INSERT INTO event_hares
+(event, hasher) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(3, 6),
+(4, 6),
+(5, 1),
+(5, 5),
+(6, 1),
+(7, 6);
+
+INSERT INTO event_jedi
+(event, hasher) VALUES
+(1, 3),
+(2, 3),
+(3, 5),
+(4, 5),
+(4, 6),
+(5, 3),
+(6, 5),
+(7, 3);
+
+INSERT INTO honor_def
+(id, kennel, title, type, num) VALUES
+(1, 3, 'Repeat badge', 'hash', 2),
+(2, 3, 'Five timer', 'hash', 5);
+
+INSERT INTO honor_delivery
+(honor, hasher, event) VALUES
+(1, 1, 2),
+(1, 2, 2),
+(1, 5, 4),
+(1, 6, 5),
+(2, 1, 6);

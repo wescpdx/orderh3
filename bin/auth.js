@@ -53,24 +53,36 @@ const auth = {
   // If not authenticated, bounce to /auth
   // router.use(auth.loginOnlyExpress);
   loginOnlyExpress: function(req, res, next) {
-    if (!req.isAuthenticated()) {
-      log.logVerbose('auth.loginOnlyExpress: Auth failed');
-      res.redirect('/auth');
-    } else {
+    if (req.isAuthenticated()) {
       log.logVerbose('auth.loginOnlyExpress: Auth passed');
       next();
+    } else {
+      log.logVerbose('auth.loginOnlyExpress: Auth failed');
+      res.redirect('/auth');
     }
   },
 
-  // If not an active user, bounce to /create
-  // router.use(auth.activeOnlyExpress);
-  activeOnlyExpress: function(req, res, next) {
-    if (!req.user.active) {
-      log.logVerbose('auth.activeOnlyExpress: User not active - user info = ' + JSON.stringify(req.user));
-      res.redirect('/create');
-    } else {
-      log.logVerbose('auth.activeOnlyExpress: Active user passed');
+  // If doesn't have data entry permissions, bounce to /profile
+  // router.use(auth.dataEntryOnlyExpress);
+  dataEntryOnlyExpress: function(req, res, next) {
+    if (req.user.permissions === "data_entry" || req.user.permissions === "admin") {
+      log.logVerbose('auth.dataEntryOnlyExpress: Data entry user passed');
       next();
+    } else {
+      log.logVerbose('auth.dataEntryOnlyExpress: User does not have data entry permissions - user info = ' + JSON.stringify(req.user));
+      res.redirect('/profile');
+    }
+  },
+
+  // If doesn't have admin permissions, bounce to /profile
+  // router.use(auth.dataEntryOnlyExpress);
+  adminOnlyExpress: function(req, res, next) {
+    if (req.user.permissions === "admin") {
+      log.logVerbose('auth.adminOnlyExpress: Admin user passed');
+      next();
+    } else {
+      log.logVerbose('auth.adminOnlyExpress: User does not have admin permissions - user info = ' + JSON.stringify(req.user));
+      res.redirect('/profile');
     }
   },
 
