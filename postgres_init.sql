@@ -141,6 +141,34 @@ JOIN kennel k
 WHERE k.id = 3
 GROUP BY 1, 2, 3, 4, 5, 6;
 
+CREATE VIEW hasher_hares
+AS
+SELECT k.id AS kennel_id, k.name AS kennel_name, h.id AS hasher_id, h.hash_name,
+ h.real_name, h.fb_name, COUNT(eh.event) AS hashes
+FROM hasher h
+JOIN event_hares eh
+ ON eh.hasher = h.id
+JOIN event e
+ ON eh.event = e.id
+JOIN kennel k
+ ON e.kennel = k.id
+WHERE k.id = 3
+GROUP BY 1, 2, 3, 4, 5, 6;
+
+CREATE VIEW hasher_jedi
+AS
+SELECT k.id AS kennel_id, k.name AS kennel_name, h.id AS hasher_id, h.hash_name,
+ h.real_name, h.fb_name, COUNT(eh.event) AS hashes
+FROM hasher h
+JOIN event_jedi eh
+ ON eh.hasher = h.id
+JOIN event e
+ ON eh.event = e.id
+JOIN kennel k
+ ON e.kennel = k.id
+WHERE k.id = 3
+GROUP BY 1, 2, 3, 4, 5, 6;
+
 -- ==============================================================================
 -- RESET AND INSERT SAMPLE DATA
 -- ==============================================================================
