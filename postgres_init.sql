@@ -26,8 +26,8 @@ CREATE TABLE public.hasher
   fb_url      VARCHAR(100),
   kennel      INTEGER,
   notes       VARCHAR(1000),
-  created     TIMESTAMPTZ,
-  updated     TIMESTAMPTZ,
+  created     TIMESTAMPTZ DEFAULT NOW(),
+  updated     TIMESTAMPTZ DEFAULT NOW(),
 
   CONSTRAINT fk_kennel FOREIGN KEY (kennel) REFERENCES kennel (id)
 );
@@ -41,8 +41,8 @@ CREATE TABLE public.event
   ev_date     DATE,
   location    VARCHAR(200),
   notes       VARCHAR(1000),
-  created     TIMESTAMPTZ,
-  updated     TIMESTAMPTZ,
+  created     TIMESTAMPTZ DEFAULT NOW(),
+  updated     TIMESTAMPTZ DEFAULT NOW(),
 
   CONSTRAINT fk_kennel FOREIGN KEY (kennel) REFERENCES kennel (id)
 );
@@ -88,8 +88,8 @@ CREATE TABLE public.honor_def
   kennel      INTEGER,
   type        honor_type,
   num         INTEGER,
-  created     TIMESTAMPTZ,
-  updated     TIMESTAMPTZ,
+  created     TIMESTAMPTZ DEFAULT NOW(),
+  updated     TIMESTAMPTZ DEFAULT NOW(),
 
   CONSTRAINT fk_kennel FOREIGN KEY (kennel) REFERENCES kennel (id)
 );
@@ -100,8 +100,8 @@ CREATE TABLE public.honor_delivery
   honor       INTEGER,
   hasher      INTEGER,
   event       INTEGER,
-  created     TIMESTAMPTZ,
-  updated     TIMESTAMPTZ,
+  created     TIMESTAMPTZ DEFAULT NOW(),
+  updated     TIMESTAMPTZ DEFAULT NOW(),
 
   CONSTRAINT fk_honor FOREIGN KEY (honor) REFERENCES honor_def (id),
   CONSTRAINT fk_hasher FOREIGN KEY (hasher) REFERENCES hasher (id),
@@ -123,8 +123,8 @@ CREATE TABLE public.auth_user
   email       VARCHAR(100),
   permissions permissions,
   last_login  TIMESTAMPTZ,
-  created     TIMESTAMPTZ,
-  updated     TIMESTAMPTZ
+  created     TIMESTAMPTZ DEFAULT NOW(),
+  updated     TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE VIEW hasher_attendance

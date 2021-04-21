@@ -25,6 +25,14 @@ const validUserObject = function(user) {
   return true;
 }
 
+const validHasherObject = function(hasher) {
+  if (typeof hasher.id !== "number") {
+    log.logError(`h3db.validHasherObject: Invalid hasher id: ${hasher.id}`);
+    return false;
+  }
+  return true;
+}
+
 const h3db = {
 
   fetchUserByAuth: async function(key) {
@@ -44,7 +52,7 @@ const h3db = {
       return;
     }
     try {
-      const res = await pool.query('UPDATE auth_user SET name = $1, email = $2 WHERE google_key = $3',
+      const res = await pool.query('UPDATE auth_user SET name = $1, email = $2, updated = NOW() WHERE google_key = $3',
         [user.name, user.email, user.key]);
       log.logVerbose(`h3db.updateUserByAuth: ${res.command} query issued, ${res.rowCount} rows affected`);
       if (res.rowCount > 0) {
@@ -75,6 +83,55 @@ const h3db = {
       }
     } catch(e) {
       log.logError('h3db.createNewUser: Error querying database -' + e.message);
+    }
+  },
+
+  fetchHasherById: async function(id) {
+    try {
+      const res = await pool.query(`SELECT id, real_name, hash_name, fb_name, fb_url, kennel, notes
+        FROM hasher WHERE id = $1`, [ id ]);
+      log.logVerbose(`h3db.fetchHasherById: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount === 1) {
+        return res.rows[0];
+      } else if (res.rowCount === 0) {
+        return {};
+      } else {
+        throw(new Error(`Failure to query for hasher id='${id}' in database.`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchHasherById: Error querying database - ' + e.message);
+      return undefined;
+    }
+  },
+
+  updateHasher: async function(hasher) {
+    if (!validHasherObject(hasher)) {
+      log.logError('h3db.updateHasherById: Invalid hasher data.');
+      return;
+    }
+    try {
+      const res = await pool.query(`UPDATE hasher SET real_name = $1, hash_name = $2,
+        fb_name = $3, fb_url = $4, kennel = $5, notes = $6, updated = NOW()
+        WHERE id = $7`,
+        [hasher.real_name, hasher.hash_name, hasher.fb_name, hasher.fb_url, hasher.kennel, hasher.notes, hasher.id]);
+      log.logVerbose(`h3db.updateHasherById: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        log.logInfo(`Successfully updated hasher ${hasher.hash_name}`);
+        return hasher;
+      } else {
+        throw(new Error(`Failure to update hasher '${hasher.hash_name}' in database, zero rows affected.`));
+      }
+    } catch(e) {
+      log.logError('h3db.updateHasherById: Error querying database -' + e.message);
+    }
+  },
+
+  fetchKennelList: async function() {
+    try {
+      const { rows } = await pool.query(`SELECT id, name FROM kennel ORDER BY name`);
+      return rows;
+    } catch(e) {
+      log.logError('h3db.fetchKennelList: Error querying database -' + e.message);
     }
   },
 
