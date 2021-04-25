@@ -65,7 +65,7 @@ const auth = {
   // If doesn't have data entry permissions, bounce to /profile
   // router.use(auth.dataEntryOnlyExpress);
   dataEntryOnlyExpress: function(req, res, next) {
-    if (req.user.permissions === "data_entry" || req.user.permissions === "admin") {
+    if (req.isAuthenticated() && (req.user.permissions === "data_entry" || req.user.permissions === "admin")) {
       log.logVerbose('auth.dataEntryOnlyExpress: Data entry user passed');
       next();
     } else {
@@ -74,10 +74,22 @@ const auth = {
     }
   },
 
+  // If doesn't have data entry permissions, respond with 401
+  // router.use(auth.dataEntryOnlyApi);
+  dataEntryOnlyApi: function(req, res, next) {
+    if (req.isAuthenticated() && (req.user.permissions === "data_entry" || req.user.permissions === "admin")) {
+      log.logVerbose('auth.dataEntryOnlyApi: Data entry user passed');
+      next();
+    } else {
+      log.logVerbose('auth.dataEntryOnlyApi: User does not have data entry permissions - user info = ' + JSON.stringify(req.user));
+      res.status(401).json({ error: "Authentication failed."});
+    }
+  },
+
   // If doesn't have admin permissions, bounce to /profile
   // router.use(auth.dataEntryOnlyExpress);
   adminOnlyExpress: function(req, res, next) {
-    if (req.user.permissions === "admin") {
+    if (req.isAuthenticated() && req.user.permissions === "admin") {
       log.logVerbose('auth.adminOnlyExpress: Admin user passed');
       next();
     } else {
