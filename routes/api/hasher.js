@@ -1,17 +1,28 @@
 const express = require('express');
 const auth = require('../../bin/auth');
+const h3db = require('../../bin/h3db');
 const router = express.Router();
 
 router.use(auth.dataEntryOnlyApi);
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  let content = {
-    test: "This is a test",
-    user: req.user,
-  };
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(content));
+
+router.get('/:id', function(req, res, next) {
+  h3db.fetchHasherFullRecord(req.params.id)
+  .then((hasher) => {
+    let content = {
+      hasher: hasher,
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(content));
+  });
+});
+
+router.post('/:id', function(req, res, next) {
+  h3db.updateHasher(req.body)
+  .then((apiResponse) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(apiResponse));
+  });
 });
 
 module.exports = router;

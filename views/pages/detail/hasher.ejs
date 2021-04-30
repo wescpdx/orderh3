@@ -10,27 +10,11 @@
 </header>
 
 <main>
-  <h1>Hasher Details</h1>
-  <h2><%= hasher.hash_name %></h2>
 
-  <form target="_self" method="post">
-    <label for="real_name">Real Name:</label>
-    <input type="text" id="real_name" name="real_name" value="<%= hasher.real_name %>" />
-    <br>
-    <label for="hash_name">Hash name:</label>
-    <input type="text" id="hash_name" name="hash_name" value="<%= hasher.hash_name %>" />
-    <br>
-    <label for="fb_name">Facebook name:</label>
-    <input type="text" id="fb_name" name="fb_name" value="<%= hasher.fb_name %>" />
-    <br>
-    <label for="fb_url">Facebook URL:</label>
-    <input type="text" id="fb_url" name="fb_url" value="<%= hasher.fb_url %>" />
-    <br>
-    <label for="kennel">Home kennel:</label>
-    <input type="text" id="kennel" name="kennel" value="<%= hasher.kennel %>" />
-    <br><br>
-    <input type="submit" value="Update" />
-  </form>
+  <%- include('../../partials/hasher-edit-form'); %>
+
+  <%- include('../../partials/hasher-event-list'); %>
+
 
 </main>
 

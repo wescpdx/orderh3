@@ -18,7 +18,8 @@ router.get('/hasher', function(req, res, next) {
 });
 
 router.get('/hasher/:id', function(req, res, next) {
-  h3db.fetchHasherById(req.params.id).then((hasher) => {
+  h3db.fetchHasherFullRecord(req.params.id)
+  .then((hasher) => {
     res.render('detail/hasher', {
       hasher: hasher || {},
     });
@@ -35,7 +36,9 @@ router.post('/hasher/:id', function(req, res, next) {
     kennel: req.body.kennel,
     notes: req.body.notes,
   };
-  h3db.updateHasher(newHasher).then((hasher) => {
+  h3db.updateHasher(newHasher)
+  h3db.fetchHasherFullRecord(req.params.id)
+  .then((hasher) => {
     res.render('detail/hasher', {
       hasher: hasher || {},
     });

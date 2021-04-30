@@ -96,7 +96,7 @@ const h3db = {
       } else if (res.rowCount === 0) {
         return {};
       } else {
-        throw(new Error(`Failure to query for hasher id='${id}' in database.`));
+        throw(new Error(`h3db.fetchHasherById: Failure to query for hasher id='${id}' in database.`));
       }
     } catch(e) {
       log.logError('h3db.fetchHasherById: Error querying database - ' + e.message);
@@ -117,12 +117,31 @@ const h3db = {
       log.logVerbose(`h3db.updateHasherById: ${res.command} query issued, ${res.rowCount} rows affected`);
       if (res.rowCount > 0) {
         log.logInfo(`Successfully updated hasher ${hasher.hash_name}`);
-        return hasher;
+        return { success: true };
       } else {
         throw(new Error(`Failure to update hasher '${hasher.hash_name}' in database, zero rows affected.`));
       }
     } catch(e) {
       log.logError('h3db.updateHasherById: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
+  fetchEventListByHasherId: async function(id) {
+    try {
+      const res = await pool.query(`SELECT e.id, e.kennel, e.title, e.number, e.ev_date, e.location, e.notes
+        FROM event e JOIN event_hashers eh ON eh.event = e.id  WHERE eh.hasher = $1`, [ id ]);
+      log.logVerbose(`h3db.fetchEventListByHasherId: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 1) {
+        return res.rows;
+      } else if (res.rowCount === 0) {
+        return [];
+      } else {
+        throw(new Error(`h3db.fetchEventListByHasherId: Failure to query for hasher id='${id}' in database.`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchEventListByHasherId: Error querying database - ' + e.message);
+      return undefined;
     }
   },
 
@@ -133,6 +152,13 @@ const h3db = {
     } catch(e) {
       log.logError('h3db.fetchKennelList: Error querying database -' + e.message);
     }
+  },
+
+  fetchHasherFullRecord: async function(id) {
+    const hasher = await h3db.fetchHasherById(id);
+    hasher.events = await h3db.fetchEventListByHasherId(id);
+    console.log("fetchHasherFullRecord: Did the thing");
+    return hasher;
   },
 
   reportOnHonorsDue: async function(kennel) {
