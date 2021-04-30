@@ -22,7 +22,15 @@
     </div>
     <div class="input_box">
       <label for="kennel">Home kennel:</label>
-      <input type="text" id="kennel" name="kennel" value="<%= hasher.kennel %>" />
+      <select id="kennel" name="kennel">
+        <option value=""></option>
+        <% if (kennelList && kennelList.length > 0) { %>
+          <% for (let i=0, l=kennelList.length; i < l; i++) { %>
+            <option value=<%= kennelList[i].id %> <%= kennelList[i].selected ? "selected" : "" %> >
+              <%= kennelList[i].name %></option>
+          <% } %>
+        <% } %>
+      </select>
     </div>
     <div class="input_box">
       <label for="notes">Notes:</label><br>

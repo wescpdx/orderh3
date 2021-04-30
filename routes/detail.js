@@ -17,15 +17,6 @@ router.get('/hasher', function(req, res, next) {
   });
 });
 
-router.get('/hasher/:id', function(req, res, next) {
-  h3db.fetchHasherFullRecord(req.params.id)
-  .then((hasher) => {
-    res.render('detail/hasher', {
-      hasher: hasher || {},
-    });
-  });
-});
-
 router.post('/hasher/:id', function(req, res, next) {
   let newHasher = {
     id: parseInt(req.params.id),
@@ -37,12 +28,25 @@ router.post('/hasher/:id', function(req, res, next) {
     notes: req.body.notes,
   };
   h3db.updateHasher(newHasher)
+  next();
+});
+
+router.all('/hasher/:id', function(req, res, next) {
   h3db.fetchHasherFullRecord(req.params.id)
   .then((hasher) => {
-    res.render('detail/hasher', {
-      hasher: hasher || {},
-    });
+    res.locals.hasher = hasher || {};
+  })
+  .then(() => h3db.fetchKennelList())
+  .then((kennelList) => {
+    res.locals.kennelList = kennelList || [];
+    for (let i = kennelList.length - 1; i >= 0; i--) {
+      if (parseInt(kennelList[i].id) === parseInt(res.locals.hasher.kennel.id)) {
+        kennelList[i].selected = true;
+      }
+    }
+    res.render('detail/hasher');
   });
 });
+
 
 module.exports = router;

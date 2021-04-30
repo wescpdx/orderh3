@@ -4,7 +4,7 @@
       <a class="nav-link" href="/">Home</a>
     </li>
 
-    <% if (loggedIn) { %>
+    <% if (typeof loggedIn === "boolean" && loggedIn) { %>
       <li class="nav-item">
         <a class="nav-link" href="/reports/honors-due">Report</a>
       </li>

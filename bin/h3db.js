@@ -104,6 +104,24 @@ const h3db = {
     }
   },
 
+  fetchKennelById: async function(id) {
+    try {
+      const res = await pool.query(`SELECT id, name
+        FROM kennel WHERE id = $1`, [ id ]);
+      log.logVerbose(`h3db.fetchKennelById: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount === 1) {
+        return res.rows[0];
+      } else if (res.rowCount === 0) {
+        return {};
+      } else {
+        throw(new Error(`h3db.fetchKennelById: Failure to query for hasher id='${id}' in database.`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchKennelById: Error querying database - ' + e.message);
+      return undefined;
+    }
+  },
+
   updateHasher: async function(hasher) {
     if (!validHasherObject(hasher)) {
       log.logError('h3db.updateHasherById: Invalid hasher data.');
@@ -157,7 +175,7 @@ const h3db = {
   fetchHasherFullRecord: async function(id) {
     const hasher = await h3db.fetchHasherById(id);
     hasher.events = await h3db.fetchEventListByHasherId(id);
-    console.log("fetchHasherFullRecord: Did the thing");
+    hasher.kennel = await h3db.fetchKennelById(hasher.kennel);
     return hasher;
   },
 
