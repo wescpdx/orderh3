@@ -1,0 +1,26 @@
+
+<div id="event_list">
+  <h3>Events attended:</h3>
+  <table>
+    <tr class="list_header">
+      <td>Date</td>
+      <td>Kennel</td>
+      <td>Number</td>
+      <td>Title</td>
+    </tr>
+  <% if (events && events.length > 0) { %>
+    <% for (let i=0, l=events.length; i < l; i++) { %>
+      <tr class="list_item">
+        <td><%= events[i].ev_date %></td>
+        <td><%= events[i].kennel %></td>
+        <td><%= events[i].number %></td>
+        <td><%= events[i].title %></td>
+      </tr>
+    <% } %>
+  <% } else { %>
+    <tr>
+      <td>No events to show</td>
+    </tr>
+  <% } %>
+  </table>
+</div>

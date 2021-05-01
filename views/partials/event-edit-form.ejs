@@ -1,0 +1,34 @@
+
+<div id="edit_event_form">
+  <h1>Edit Event Details</h1>
+  <h2><%= event.title %></h2>
+
+  <form id="edit_event_form" target="_self" method="post">
+    <div class="input_box">
+      <input type="hidden" id="kennel" name="kennel" value="3" />
+    </div>
+    <div class="input_box">
+      <label for="title">Event Title:</label>
+      <input type="text" id="title" name="title" value="<%= event.title %>" />
+    </div>
+    <div class="input_box">
+      <label for="number">Number:</label>
+      <input type="text" id="number" name="number" value="<%= event.number %>" />
+    </div>
+    <div class="input_box">
+      <label for="ev_date">Event Date:</label>
+      <input type="text" id="ev_date" name="ev_date" value="<%= event.ev_date %>" />
+    </div>
+    <div class="input_box">
+      <label for="location">Location:</label>
+      <input type="text" id="location" name="location" value="<%= event.location %>" />
+    </div>
+
+    <div class="input_box">
+      <label for="notes">Notes:</label><br>
+      <textarea rows="6" id="notes" name="notes"><%= event.notes %></textarea>
+    </div>
+    <input id="edit_event_submit" type="submit" value="Update" />
+  </form>
+
+</div>

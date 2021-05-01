@@ -1,0 +1,26 @@
+
+<div id="award_list">
+  <h3>Awards delivered:</h3>
+  <table>
+    <tr class="list_header">
+      <td>Date Given</td>
+      <td>Type</td>
+      <td>Number</td>
+      <td>Title</td>
+    </tr>
+  <% if (awards && awards.length > 0) { %>
+    <% for (let i=0, l=awards.length; i < l; i++) { %>
+      <tr class="list_item">
+        <td><%= awards[i].ev_date %></td>
+        <td><%= awards[i].type %></td>
+        <td><%= awards[i].num %></td>
+        <td><%= awards[i].title %></td>
+      </tr>
+    <% } %>
+  <% } else { %>
+    <tr>
+      <td>No awards to show</td>
+    </tr>
+  <% } %>
+  </table>
+</div>

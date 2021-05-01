@@ -17,6 +17,12 @@ router.get('/hasher', function(req, res, next) {
   });
 });
 
+router.get('/event', function(req, res, next) {
+  res.render('detail/index', {
+    //loggedIn: !!req.user.key,
+  });
+});
+
 router.post('/hasher/:id', function(req, res, next) {
   let newHasher = {
     id: parseInt(req.params.id),
@@ -28,7 +34,7 @@ router.post('/hasher/:id', function(req, res, next) {
     notes: req.body.notes,
   };
   h3db.updateHasher(newHasher)
-  next();
+  .then(() => next());
 });
 
 router.all('/hasher/:id', function(req, res, next) {
@@ -44,9 +50,38 @@ router.all('/hasher/:id', function(req, res, next) {
         kennelList[i].selected = true;
       }
     }
-    res.render('detail/hasher');
+    res.render('detail/hasher', {
+      awards: res.locals.hasher.awards,
+      events: res.locals.hasher.events,
+    });
   });
 });
 
+
+
+router.post('/event/:id', function(req, res, next) {
+  let newEvent = {
+    id: parseInt(req.params.id),
+    kennel: req.body.kennel,
+    title: req.body.title,
+    number: req.body.number,
+    ev_date: req.body.ev_date,
+    location: req.body.location,
+    notes: req.body.notes,
+  };
+  h3db.updateEvent(newEvent)
+  .then(() => next());
+});
+
+router.all('/event/:id', function(req, res, next) {
+  h3db.fetchEventFullRecord(req.params.id)
+  .then((event) => {
+    res.locals.event = event || {};
+    res.render('detail/event', {
+      awards: event.awards,
+      hashers: event.hashers,
+    });
+  });
+});
 
 module.exports = router;

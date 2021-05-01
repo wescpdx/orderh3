@@ -51,24 +51,8 @@ CREATE TABLE public.event_hashers
 (
   event       INTEGER,
   hasher      INTEGER,
-
-  CONSTRAINT fk_hasher FOREIGN KEY (hasher) REFERENCES hasher (id),
-  CONSTRAINT fk_event FOREIGN KEY (event) REFERENCES event (id)
-);
-
-CREATE TABLE public.event_hares
-(
-  event       INTEGER,
-  hasher      INTEGER,
-
-  CONSTRAINT fk_hasher FOREIGN KEY (hasher) REFERENCES hasher (id),
-  CONSTRAINT fk_event FOREIGN KEY (event) REFERENCES event (id)
-);
-
-CREATE TABLE public.event_jedi
-(
-  event       INTEGER,
-  hasher      INTEGER,
+  hare        BOOLEAN DEFAULT false,
+  jedi        BOOLEAN DEFAULT false,
 
   CONSTRAINT fk_hasher FOREIGN KEY (hasher) REFERENCES hasher (id),
   CONSTRAINT fk_event FOREIGN KEY (event) REFERENCES event (id)
@@ -144,29 +128,31 @@ GROUP BY 1, 2, 3, 4, 5, 6;
 CREATE VIEW hasher_hares
 AS
 SELECT k.id AS kennel_id, k.name AS kennel_name, h.id AS hasher_id, h.hash_name,
- h.real_name, h.fb_name, COUNT(eh.event) AS hashes
+ h.real_name, h.fb_name, COUNT(eh.event) AS hares
 FROM hasher h
-JOIN event_hares eh
+JOIN event_hashers eh
  ON eh.hasher = h.id
 JOIN event e
  ON eh.event = e.id
 JOIN kennel k
  ON e.kennel = k.id
 WHERE k.id = 3
+ AND eh.hare
 GROUP BY 1, 2, 3, 4, 5, 6;
 
 CREATE VIEW hasher_jedi
 AS
 SELECT k.id AS kennel_id, k.name AS kennel_name, h.id AS hasher_id, h.hash_name,
- h.real_name, h.fb_name, COUNT(eh.event) AS hashes
+ h.real_name, h.fb_name, COUNT(eh.event) AS jedi
 FROM hasher h
-JOIN event_jedi eh
+JOIN event_hashers eh
  ON eh.hasher = h.id
 JOIN event e
  ON eh.event = e.id
 JOIN kennel k
  ON e.kennel = k.id
 WHERE k.id = 3
+ AND eh.jedi
 GROUP BY 1, 2, 3, 4, 5, 6;
 
 -- ==============================================================================
@@ -184,9 +170,9 @@ DELETE FROM kennel;
 
 INSERT INTO kennel
 (id, name) VALUES
-(1, 'Stumptown H3'),
-(2, 'Oregon H3'),
-(3, 'Test Kennel');
+(1, 'Stumptown H3 (SH3)'),
+(2, 'Oregon H3 (OH3)'),
+(3, 'Test Kennel (TK)');
 
 INSERT INTO event
 (id, kennel, title, number, ev_date, location) VALUES
@@ -208,60 +194,37 @@ INSERT INTO hasher
 (6, 3, 'Frankie Prather', 'Chiller');
 
 INSERT INTO event_hashers
-(event, hasher) VALUES
-(1, 1),
-(1, 2),
-(1, 3),
-(1, 4),
-(2, 1),
-(2, 3),
-(2, 4),
-(2, 6),
-(3, 1),
-(3, 2),
-(3, 5),
-(3, 6),
-(4, 1),
-(4, 4),
-(4, 5),
-(4, 6),
-(5, 1),
-(5, 2),
-(5, 3),
-(5, 5),
-(5, 6),
-(6, 1),
-(6, 2),
-(6, 5),
-(6, 6),
-(7, 1),
-(7, 2),
-(7, 3),
-(7, 5),
-(7, 6);
-
-INSERT INTO event_hares
-(event, hasher) VALUES
-(1, 1),
-(2, 1),
-(3, 1),
-(3, 6),
-(4, 6),
-(5, 1),
-(5, 5),
-(6, 1),
-(7, 6);
-
-INSERT INTO event_jedi
-(event, hasher) VALUES
-(1, 3),
-(2, 3),
-(3, 5),
-(4, 5),
-(4, 6),
-(5, 3),
-(6, 5),
-(7, 3);
+(event, hasher, hare, jedi) VALUES
+(1, 1, true, false),
+(1, 2, false, false),
+(1, 3, false, true),
+(1, 4, false, false),
+(2, 1, true, false),
+(2, 3, false, true),
+(2, 4, false, false),
+(2, 6, false, false),
+(3, 1, true, false),
+(3, 2, false, false),
+(3, 5, false, true),
+(3, 6, true, false),
+(4, 1, false, false),
+(4, 4, false, false),
+(4, 5, false, true),
+(4, 6, true, true),
+(5, 1, true, false),
+(5, 2, false, false),
+(5, 3, false, true),
+(5, 5, true, false),
+(5, 6, false, false),
+(6, 1, true, false),
+(6, 2, false, false),
+(6, 5, false, true),
+(6, 6, false, false),
+(7, 1, false, false),
+(7, 2, false, false),
+(7, 3, false, true),
+(7, 5, false, false),
+(7, 6, true, false);
 
 INSERT INTO honor_def
 (id, kennel, title, type, num) VALUES
