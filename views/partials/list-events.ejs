@@ -14,7 +14,7 @@
         <td><%= events[i].ev_date %></td>
         <td><%= events[i].kennel %></td>
         <td><%= events[i].number %></td>
-        <td><%= events[i].title %></td>
+        <td><a href="/detail/event/<%= events[i].id _%>"><%= events[i].title %></a></td>
       </tr>
     <% } %>
   <% } else { %>
