@@ -157,7 +157,8 @@ const h3db = {
 
   fetchEventListByHasherId: async function(id) {
     try {
-      const res = await pool.query(`SELECT e.id, e.kennel, e.title, e.number, TO_CHAR(e.ev_date, 'yyyy-mm-dd') as ev_date, e.location, e.notes
+      const res = await pool.query(`SELECT e.id, e.kennel, e.title, e.number, TO_CHAR(e.ev_date, 'yyyy-mm-dd') as ev_date,
+      e.location, e.notes, eh.hare, eh.jedi
         FROM event e JOIN event_hashers eh ON eh.event = e.id  WHERE eh.hasher = $1`, [ id ]);
       log.logVerbose(`h3db.fetchEventListByHasherId: ${res.command} query issued, ${res.rowCount} rows affected`);
       if (res.rowCount > 1) {

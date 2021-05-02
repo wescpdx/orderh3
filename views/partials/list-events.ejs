@@ -7,6 +7,8 @@
       <td>Kennel</td>
       <td>Number</td>
       <td>Title</td>
+      <td>Hare?</td>
+      <td>Jedi?</td>
     </tr>
   <% if (events && events.length > 0) { %>
     <% for (let i=0, l=events.length; i < l; i++) { %>
@@ -15,6 +17,8 @@
         <td><%= events[i].kennel %></td>
         <td><%= events[i].number %></td>
         <td><a href="/detail/event/<%= events[i].id _%>"><%= events[i].title %></a></td>
+        <td><%= events[i].hare ? "YES" : "" %></td>
+        <td><%= events[i].jedi ? "YES" : "" %></td>
       </tr>
     <% } %>
   <% } else { %>
