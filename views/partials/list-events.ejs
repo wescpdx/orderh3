@@ -1,14 +1,17 @@
 
 <div id="event_list">
-  <h3>Events attended:</h3>
   <table>
     <tr class="list_header">
       <td>Date</td>
       <td>Kennel</td>
       <td>Number</td>
       <td>Title</td>
-      <td>Hare?</td>
-      <td>Jedi?</td>
+      <% if (typeof locals.events[0].hare !== "undefined") { %>
+        <td>Hare?</td>
+      <% } %>
+      <% if (typeof locals.events[0].jedi !== "undefined") { %>
+        <td>Jedi?</td>
+      <% } %>
     </tr>
   <% if (events && events.length > 0) { %>
     <% for (let i=0, l=events.length; i < l; i++) { %>
@@ -17,8 +20,12 @@
         <td><%= events[i].kennel %></td>
         <td><%= events[i].number %></td>
         <td><a href="/detail/event/<%= events[i].id _%>"><%= events[i].title %></a></td>
-        <td><%= events[i].hare ? "YES" : "" %></td>
-        <td><%= events[i].jedi ? "YES" : "" %></td>
+        <% if (typeof locals.events[0].hare !== "undefined") { %>
+          <td><%= events[i].hare ? "YES" : "" %></td>
+        <% } %>
+        <% if (typeof locals.events[0].jedi !== "undefined") { %>
+          <td><%= events[i].jedi ? "YES" : "" %></td>
+        <% } %>
       </tr>
     <% } %>
   <% } else { %>

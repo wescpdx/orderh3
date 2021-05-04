@@ -11,15 +11,43 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.post('/hasher', function(req, res, next) {
+  h3db.fetchHasherListBySearchTerm(req.body.search)
+  .then((hashers) => {
+    res.render('detail/index', {
+      title: 'Hashers matching criteria',
+      hashers: hashers,
+    });
+  });
+});
+
 router.get('/hasher', function(req, res, next) {
-  res.render('detail/index', {
-    //loggedIn: !!req.user.key,
+  h3db.fetchHasherListByMostRecent()
+  .then((hashers) => {
+    res.render('detail/index', {
+      title: 'Most recently edited hashers',
+      hashers: hashers,
+    });
+  });
+});
+
+router.post('/event', function(req, res, next) {
+  h3db.fetchEventListBySearchTerm(req.body.search)
+  .then((events) => {
+    res.render('detail/index', {
+      title: 'Events matching criteria',
+      events: events,
+    });
   });
 });
 
 router.get('/event', function(req, res, next) {
-  res.render('detail/index', {
-    //loggedIn: !!req.user.key,
+  h3db.fetchEventListByMostRecent()
+  .then((events) => {
+    res.render('detail/index', {
+      title: 'Most recently edited events',
+      events: events,
+    });
   });
 });
 

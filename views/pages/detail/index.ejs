@@ -6,16 +6,30 @@
 <body class="container">
 
 <header>
-    <%- include('../../partials/header'); %>
+  <%- include('../../partials/header'); %>
 </header>
 
 <main>
-    <h1>How did you get here?</h1>
-    <p>This is a dead end page. Go somewhere else.</p>
+  <form id="search_form" target="_self" method="post">
+    <div class="input_box">
+      <label for="search">Search for:</label>
+      <input type="text" id="search" name="search" />
+      <input id="search_submit" type="submit" value="Search" />
+    </div>
+  </form>
+
+  <h3><%= title %></h3>
+  <% if (locals.events && locals.events.length > 0) { %>
+    <%- include('../../partials/list-events'); %>
+  <% } %>
+
+  <% if (locals.hashers && locals.hashers.length > 0) { %>
+    <%- include('../../partials/list-hashers'); %>
+  <% } %>
 
 </main>
 
-    <%- include('../../partials/footer'); %>
+  <%- include('../../partials/footer'); %>
 
 </body>
 </html>

@@ -155,13 +155,51 @@ const h3db = {
     }
   },
 
+  fetchEventListByMostRecent: async function() {
+    try {
+      const res = await pool.query(`SELECT id, kennel, title, number, TO_CHAR(ev_date, 'yyyy-mm-dd') as ev_date,
+      location, notes
+        FROM event ORDER BY updated DESC LIMIT 10`);
+      log.logVerbose(`h3db.fetchEventListByMostRecent: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        return res.rows;
+      } else if (res.rowCount === 0) {
+        return [];
+      } else {
+        throw(new Error(`h3db.fetchEventListByMostRecent: Failure to query for most recent events in database.`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchEventListByMostRecent: Error querying database - ' + e.message);
+      return undefined;
+    }
+  },
+
+  fetchEventListBySearchTerm: async function(term) {
+    try {
+      const res = await pool.query(`SELECT id, kennel, title, number, TO_CHAR(ev_date, 'yyyy-mm-dd') as ev_date,
+      location, notes
+        FROM event WHERE title ILIKE $1 OR number = $2`, [ `%${term}%`, parseInt(term) || 0 ]);
+      log.logVerbose(`h3db.fetchEventListBySearchTerm: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        return res.rows;
+      } else if (res.rowCount === 0) {
+        return [];
+      } else {
+        throw(new Error(`h3db.fetchEventListBySearchTerm: Failure to query for search term ${term}.`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchEventListBySearchTerm: Error querying database - ' + e.message);
+      return undefined;
+    }
+  },
+
   fetchEventListByHasherId: async function(id) {
     try {
       const res = await pool.query(`SELECT e.id, e.kennel, e.title, e.number, TO_CHAR(e.ev_date, 'yyyy-mm-dd') as ev_date,
       e.location, e.notes, eh.hare, eh.jedi
         FROM event e JOIN event_hashers eh ON eh.event = e.id  WHERE eh.hasher = $1`, [ id ]);
       log.logVerbose(`h3db.fetchEventListByHasherId: ${res.command} query issued, ${res.rowCount} rows affected`);
-      if (res.rowCount > 1) {
+      if (res.rowCount > 0) {
         return res.rows;
       } else if (res.rowCount === 0) {
         return [];
@@ -174,12 +212,48 @@ const h3db = {
     }
   },
 
+  fetchHasherListByMostRecent: async function(id) {
+    try {
+      const res = await pool.query(`SELECT id, real_name, hash_name
+        FROM hasher ORDER BY updated LIMIT 10`);
+      log.logVerbose(`h3db.fetchHasherListByMostRecent: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        return res.rows;
+      } else if (res.rowCount === 0) {
+        return [];
+      } else {
+        throw(new Error(`h3db.fetchHasherListByMostRecent: Failure to query for event id='${id}' in database.`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchHasherListByMostRecent: Error querying database - ' + e.message);
+      return undefined;
+    }
+  },
+
+  fetchHasherListBySearchTerm: async function(term) {
+    try {
+      const res = await pool.query(`SELECT id, real_name, hash_name
+        FROM hasher WHERE real_name ILIKE $1 OR hash_name ILIKE $1`, [ `%${term}%` ]);
+      log.logVerbose(`h3db.fetchHasherListBySearchTerm: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        return res.rows;
+      } else if (res.rowCount === 0) {
+        return [];
+      } else {
+        throw(new Error(`h3db.fetchHasherListBySearchTerm: Failure to query for search term ${term}`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchHasherListBySearchTerm: Error querying database - ' + e.message);
+      return undefined;
+    }
+  },
+
   fetchHasherListByEventId: async function(id) {
     try {
       const res = await pool.query(`SELECT h.id, h.real_name, h.hash_name, eh.hare, eh.jedi
         FROM hasher h JOIN event_hashers eh ON eh.hasher = h.id  WHERE eh.event = $1`, [ id ]);
       log.logVerbose(`h3db.fetchHasherListByEventId: ${res.command} query issued, ${res.rowCount} rows affected`);
-      if (res.rowCount > 1) {
+      if (res.rowCount > 0) {
         return res.rows;
       } else if (res.rowCount === 0) {
         return [];
@@ -200,7 +274,7 @@ const h3db = {
         JOIN event e ON d.event = e.id
         WHERE d.hasher = $1`, [ id ]);
       log.logVerbose(`h3db.fetchAwardListByHasherId: ${res.command} query issued, ${res.rowCount} rows affected`);
-      if (res.rowCount > 1) {
+      if (res.rowCount > 0) {
         return res.rows;
       } else if (res.rowCount === 0) {
         return [];
@@ -221,7 +295,7 @@ const h3db = {
         JOIN event e ON d.event = e.id
         WHERE d.event = $1`, [ id ]);
       log.logVerbose(`h3db.fetchAwardListByEventId: ${res.command} query issued, ${res.rowCount} rows affected`);
-      if (res.rowCount > 1) {
+      if (res.rowCount > 0) {
         return res.rows;
       } else if (res.rowCount === 0) {
         return [];
