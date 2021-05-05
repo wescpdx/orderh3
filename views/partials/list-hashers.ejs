@@ -14,7 +14,7 @@
   <% if (hashers && hashers.length > 0) { %>
     <% for (let i=0, l=hashers.length; i < l; i++) { %>
       <tr class="list_item">
-        <td><a href="/detail/hasher/<%= hashers[i].id _%>"><%= hashers[i].hash_name %></a></td>
+        <td><a href="/hasher/<%= hashers[i].id _%>"><%= hashers[i].hash_name %></a></td>
         <td><%= hashers[i].real_name %></td>
         <% if (typeof locals.hashers[0].hare !== "undefined") { %>
           <td><%= hashers[i].hare ? "YES" : "" %></td>

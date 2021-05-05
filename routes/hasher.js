@@ -5,13 +5,7 @@ const router = express.Router();
 
 router.use(auth.dataEntryOnlyExpress);
 
-router.get('/', function(req, res, next) {
-  res.render('detail/index', {
-    //loggedIn: !!req.user.key,
-  });
-});
-
-router.post('/hasher', function(req, res, next) {
+router.post('/', function(req, res, next) {
   h3db.fetchHasherListBySearchTerm(req.body.search)
   .then((hashers) => {
     res.render('detail/index', {
@@ -21,7 +15,7 @@ router.post('/hasher', function(req, res, next) {
   });
 });
 
-router.get('/hasher', function(req, res, next) {
+router.get('/', function(req, res, next) {
   h3db.fetchHasherListByMostRecent()
   .then((hashers) => {
     res.render('detail/index', {
@@ -31,27 +25,7 @@ router.get('/hasher', function(req, res, next) {
   });
 });
 
-router.post('/event', function(req, res, next) {
-  h3db.fetchEventListBySearchTerm(req.body.search)
-  .then((events) => {
-    res.render('detail/index', {
-      title: 'Events matching criteria',
-      events: events,
-    });
-  });
-});
-
-router.get('/event', function(req, res, next) {
-  h3db.fetchEventListByMostRecent()
-  .then((events) => {
-    res.render('detail/index', {
-      title: 'Most recently edited events',
-      events: events,
-    });
-  });
-});
-
-router.post('/hasher/:id', function(req, res, next) {
+router.post('/:id', function(req, res, next) {
   let newHasher = {
     id: parseInt(req.params.id),
     real_name: req.body.real_name,
@@ -65,7 +39,7 @@ router.post('/hasher/:id', function(req, res, next) {
   .then(() => next());
 });
 
-router.all('/hasher/:id', function(req, res, next) {
+router.all('/:id', function(req, res, next) {
   h3db.fetchHasherFullRecord(req.params.id)
   .then((hasher) => {
     res.locals.hasher = hasher || {};
@@ -85,31 +59,5 @@ router.all('/hasher/:id', function(req, res, next) {
   });
 });
 
-
-
-router.post('/event/:id', function(req, res, next) {
-  let newEvent = {
-    id: parseInt(req.params.id),
-    kennel: req.body.kennel,
-    title: req.body.title,
-    number: req.body.number,
-    ev_date: req.body.ev_date,
-    location: req.body.location,
-    notes: req.body.notes,
-  };
-  h3db.updateEvent(newEvent)
-  .then(() => next());
-});
-
-router.all('/event/:id', function(req, res, next) {
-  h3db.fetchEventFullRecord(req.params.id)
-  .then((event) => {
-    res.locals.event = event || {};
-    res.render('detail/event', {
-      awards: event.awards,
-      hashers: event.hashers,
-    });
-  });
-});
 
 module.exports = router;

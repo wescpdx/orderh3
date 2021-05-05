@@ -19,7 +19,7 @@
         <td><%= events[i].ev_date %></td>
         <td><%= events[i].kennel %></td>
         <td><%= events[i].number %></td>
-        <td><a href="/detail/event/<%= events[i].id _%>"><%= events[i].title %></a></td>
+        <td><a href="/event/<%= events[i].id _%>"><%= events[i].title %></a></td>
         <% if (typeof locals.events[0].hare !== "undefined") { %>
           <td><%= events[i].hare ? "YES" : "" %></td>
         <% } %>
