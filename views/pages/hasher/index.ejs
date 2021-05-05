@@ -10,13 +10,15 @@
 </header>
 
 <main>
+  <form id="search_form" target="_self" method="post">
+    <div class="input_box">
+      <label for="search">Search for:</label>
+      <input type="text" id="search" name="search" />
+      <input id="search_submit" type="submit" value="Search" />
+    </div>
+  </form>
 
-  <%- include('../../partials/event-edit-form'); %>
-
-  <h3>Awards delivered:</h3>
-  <%- include('../../partials/list-awards'); %>
-
-  <h3>Hashers attended:</h3>
+  <h3>Most recently edited hashers</h3>
   <%- include('../../partials/list-hashers'); %>
 
 </main>

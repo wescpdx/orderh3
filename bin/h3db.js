@@ -308,9 +308,31 @@ const h3db = {
     }
   },
 
+  createHasher: async function(hasher) {
+    if (!validHasherObject(hasher)) {
+      log.logError('h3db.createHasher: Invalid hasher data.');
+      return;
+    }
+    try {
+      const res = await pool.query(`INSERT INTO hasher (real_name, hash_name, fb_name, fb_url, kennel, notes, updated)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+        [hasher.real_name, hasher.hash_name, hasher.fb_name, hasher.fb_url, hasher.kennel, hasher.notes]);
+      log.logVerbose(`h3db.createHasher: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        log.logInfo(`Successfully created hasher record for ${hasher.hash_name}`);
+        return { success: true };
+      } else {
+        throw(new Error(`Failure to create hasher '${hasher.hash_name}' in database, zero rows affected.`));
+      }
+    } catch(e) {
+      log.logError('h3db.createHasher: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
   updateHasher: async function(hasher) {
     if (!validHasherObject(hasher)) {
-      log.logError('h3db.updateHasherById: Invalid hasher data.');
+      log.logError('h3db.updateHasher: Invalid hasher data.');
       return;
     }
     try {
@@ -331,6 +353,28 @@ const h3db = {
     }
   },
 
+  createEvent: async function(eventData) {
+    if (!validEventObject(eventData)) {
+      log.logError('h3db.updateEvent: Invalid event data.');
+      return;
+    }
+    try {
+      const res = await pool.query(`INSERT INTO event (kennel, title, number, ev_date, location, notes, updated)
+        VALUES($1, $2, $3, $4, $5, $6)`,
+        [eventData.kennel, eventData.title, parseInt(eventData.number), eventData.ev_date, eventData.location, eventData.notes]);
+      log.logVerbose(`h3db.createEvent: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        log.logInfo(`Successfully created new event ${eventData.title}`);
+        return { success: true };
+      } else {
+        throw(new Error(`Failure to create new event '${eventData.title}' in database, zero rows affected.`));
+      }
+    } catch(e) {
+      log.logError('h3db.createEvent: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+  
   updateEvent: async function(eventData) {
     if (!validEventObject(eventData)) {
       log.logError('h3db.updateEvent: Invalid event data.');
@@ -343,10 +387,10 @@ const h3db = {
         [eventData.kennel, eventData.title, parseInt(eventData.number), eventData.ev_date, eventData.location, eventData.notes, eventData.id]);
       log.logVerbose(`h3db.updateEvent: ${res.command} query issued, ${res.rowCount} rows affected`);
       if (res.rowCount > 0) {
-        log.logInfo(`Successfully updated hasher ${eventData.title}`);
+        log.logInfo(`Successfully updated event ${eventData.title}`);
         return { success: true };
       } else {
-        throw(new Error(`Failure to update hasher '${eventData.title}' in database, zero rows affected.`));
+        throw(new Error(`Failure to update event '${eventData.title}' in database, zero rows affected.`));
       }
     } catch(e) {
       log.logError('h3db.updateEvent: Error querying database -' + e.message);

@@ -8,7 +8,7 @@ router.use(auth.dataEntryOnlyExpress);
 router.post('/', function(req, res, next) {
   h3db.fetchHasherListBySearchTerm(req.body.search)
   .then((hashers) => {
-    res.render('detail/index', {
+    res.render('hasher/index', {
       title: 'Hashers matching criteria',
       hashers: hashers,
     });
@@ -18,9 +18,33 @@ router.post('/', function(req, res, next) {
 router.get('/', function(req, res, next) {
   h3db.fetchHasherListByMostRecent()
   .then((hashers) => {
-    res.render('detail/index', {
+    res.render('hasher/index', {
       title: 'Most recently edited hashers',
       hashers: hashers,
+    });
+  });
+});
+
+router.post('/new', function(req, res, next) {
+  let newHasher = {
+    real_name: req.body.real_name,
+    hash_name: req.body.hash_name,
+    fb_name: req.body.fb_name,
+    fb_url: req.body.fb_url,
+    kennel: req.body.kennel,
+    notes: req.body.notes,
+  };
+  h3db.createHasher(newHasher)
+  .then(() => next());
+});
+
+router.all('/new', function(req, res, next) {
+  h3db.fetchKennelList()
+  .then((kennelList) => {
+    res.locals.kennelList = kennelList || [];
+    res.render('hasher/new', {
+      mode: "Create",
+      hasher: {},
     });
   });
 });
@@ -52,7 +76,8 @@ router.all('/:id', function(req, res, next) {
         kennelList[i].selected = true;
       }
     }
-    res.render('detail/hasher', {
+    res.render('hasher/edit', {
+      mode: "Update",
       awards: res.locals.hasher.awards,
       events: res.locals.hasher.events,
     });

@@ -173,6 +173,7 @@ INSERT INTO kennel
 (1, 'Stumptown H3 (SH3)'),
 (2, 'Oregon H3 (OH3)'),
 (3, 'Test Kennel (TK)');
+SELECT setval('kennel_id_seq', (SELECT max(id) FROM kennel));
 
 INSERT INTO event
 (id, kennel, title, number, ev_date, location) VALUES
@@ -183,6 +184,7 @@ INSERT INTO event
 (5, 3, 'Big number 5', 5, '2021-03-02', 'Someplace cool'),
 (6, 3, 'Magic six', 6, '2021-03-11', 'A bar or something'),
 (7, 3, '777', 7, '2021-03-18', 'Downtown Portland');
+SELECT setval('event_id_seq', (SELECT max(id) FROM event));
 
 INSERT INTO hasher
 (id, kennel, real_name, hash_name) VALUES
@@ -192,6 +194,7 @@ INSERT INTO hasher
 (4, 3, 'Sally Fields', 'Cookie Monsta'),
 (5, 3, 'Henry Cook', 'The HARE'),
 (6, 3, 'Frankie Prather', 'Chiller');
+SELECT setval('hasher_id_seq', (SELECT max(id) FROM hasher));
 
 INSERT INTO event_hashers
 (event, hasher, hare, jedi) VALUES
@@ -230,6 +233,7 @@ INSERT INTO honor_def
 (id, kennel, title, type, num) VALUES
 (1, 3, 'Repeat badge', 'hash', 2),
 (2, 3, 'Five timer', 'hash', 5);
+SELECT setval('honor_def_id_seq', (SELECT max(id) FROM honor_def));
 
 INSERT INTO honor_delivery
 (honor, hasher, event) VALUES
@@ -238,3 +242,4 @@ INSERT INTO honor_delivery
 (1, 5, 4),
 (1, 6, 5),
 (2, 1, 6);
+SELECT setval('honor_delivery_id_seq', (SELECT max(id) FROM honor_delivery));

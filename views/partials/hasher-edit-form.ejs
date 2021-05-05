@@ -1,6 +1,5 @@
 
 <div id="edit_hasher_form">
-  <h1>Edit Hasher Details</h1>
   <h2><%= hasher.hash_name %></h2>
 
   <form id="edit_hasher_form" target="_self" method="post">
@@ -36,7 +35,7 @@
       <label for="notes">Notes:</label><br>
       <textarea rows="6" id="notes" name="notes"><%= hasher.notes %></textarea>
     </div>
-    <input id="edit_hasher_submit" type="submit" value="Update" />
+    <input id="edit_hasher_submit" type="submit" value=<%= mode %> />
   </form>
 
 </div>
