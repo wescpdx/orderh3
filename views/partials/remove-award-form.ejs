@@ -1,0 +1,39 @@
+
+<div id="remove_award_form">
+  <form id="remove_award" target="_self" method="post">
+    <input type="hidden" id="form" name="form" value="remove_award" />
+    <table>
+      <tr class="list_header">
+        <td></td>
+        <td>Hash Name</td>
+        <td>Title</td>
+        <td>Type</td>
+        <td>Number</td>
+      </tr>
+    <% if (event && event.awards && event.awards.length > 0) { %>
+      <% for (let i=0, l=event.awards.length; i < l; i++) { %>
+        <tr class="list_item">
+          <td>
+            <div class="input_box">
+              <input type="checkbox"
+               id="honor-<%= event.awards[i].honor_id _%>"
+               name="honor-<%= event.awards[i].honor_id _%>"
+               value="<%= event.awards[i].honor_id _%>"
+               />
+            </div>
+          </td>
+          <td><a href="/hasher/<%= event.awards[i].hasher_id _%>"><%= event.awards[i].hash_name %></a></td>
+          <td><%= event.awards[i].title %></td>
+          <td><%= event.awards[i].type %></td>
+          <td><%= event.awards[i].num %></td>
+        </tr>
+      <% } %>
+    <% } else { %>
+      <tr>
+        <td>No awards to show</td>
+      </tr>
+    <% } %>
+    </table>
+    <input id="remove_award_submit" type="submit" value="Remove" />
+  </form>
+</div>

@@ -16,7 +16,7 @@ const toIsoDate = function(dd) {
   return `${dd.getFullYear()}-${('' + dd.getMonth()).padStart(2, '0')}-${('' + dd.getDate()).padStart(2, '0')}`;
 };
 
-const parseHasherList = function(list) {
+const parseIdList = function(list) {
   if (typeof list === "number") {
     return list + "";
   }
@@ -356,7 +356,7 @@ const h3db = {
 
   fetchAwardListByEventId: async function(id) {
     try {
-      const res = await pool.query(`SELECT hh.id AS hasher_id, hh.hash_name, h.type, h.num, h.title, TO_CHAR(e.ev_date, 'yyyy-mm-dd') as ev_date
+      const res = await pool.query(`SELECT d.id AS honor_id, hh.id AS hasher_id, hh.hash_name, h.type, h.num, h.title, TO_CHAR(e.ev_date, 'yyyy-mm-dd') as ev_date
         FROM honor_delivery d
         JOIN honor_def h ON d.honor = h.id
         JOIN event e ON d.event = e.id
@@ -530,13 +530,12 @@ const h3db = {
   },
 
   removeHashersFromEvent: async function(hasherList, eventId) {
-    const scrubbedHasherList = parseHasherList(hasherList);
+    const scrubbedHasherList = parseIdList(hasherList);
     if (typeof eventId !== "number") {
       log.logError('h3db.removeHashersFromEvent: Invalid event id.');
       return;
     }
     try {
-      console.log(`QUERY::DELETE FROM event_hashers WHERE hasher IN (${scrubbedHasherList}) AND event = ${eventId}`);
       const res = await pool.query(`DELETE FROM event_hashers WHERE hasher IN (${scrubbedHasherList}) AND event = $1`,
         [eventId]);
       log.logVerbose(`h3db.removeHashersFromEvent: ${res.command} query issued, ${res.rowCount} rows affected`);
@@ -548,6 +547,23 @@ const h3db = {
       }
     } catch(e) {
       log.logError('h3db.removeHashersFromEvent: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
+  removeAwardDelivery: async function(honorList) {
+    const scrubbedHonorList = parseIdList(honorList);
+    try {
+      const res = await pool.query(`DELETE FROM honor_delivery WHERE id IN (${scrubbedHonorList})`);
+      log.logVerbose(`h3db.removeAwardDelivery: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        log.logInfo(`Successfully removed honor id ${scrubbedHonorList}`);
+        return { success: true };
+      } else {
+        throw(new Error(`Failure to remove honor id ${scrubbedHonorList} in database, zero rows affected.`));
+      }
+    } catch(e) {
+      log.logError('h3db.removeAwardDelivery: Error querying database -' + e.message);
       return { success: false, error: e.message, stack: e.stack };
     }
   },

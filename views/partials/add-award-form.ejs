@@ -10,22 +10,22 @@
         <td>Type</td>
         <td>Number</td>
       </tr>
-    <% if (awards && awards.length > 0) { %>
-      <% for (let i=0, l=awards.length; i < l; i++) { %>
+    <% if (awardsToAdd && awardsToAdd.length > 0) { %>
+      <% for (let i=0, l=awardsToAdd.length; i < l; i++) { %>
         <tr class="list_item">
           <td>
             <div class="input_box">
               <input type="checkbox"
-               id="hasher-<%= awards[i].hasher_id _%>--honor-<%= awards[i].honor_id _%>-"
-               name="hasher-<%= awards[i].hasher_id _%>--honor-<%= awards[i].honor_id _%>-"
-               value="<%= awards[i].hasher_id _%>"
+               id="hasher-<%= awardsToAdd[i].hasher_id _%>--honor-<%= awardsToAdd[i].honor_id _%>-"
+               name="hasher-<%= awardsToAdd[i].hasher_id _%>--honor-<%= awardsToAdd[i].honor_id _%>-"
+               value="<%= awardsToAdd[i].hasher_id _%>"
                />
             </div>
           </td>
-          <td><a href="/hasher/<%= awards[i].hasher_id _%>"><%= awards[i].hash_name %></a></td>
-          <td><%= awards[i].title %></td>
-          <td><%= awards[i].type %></td>
-          <td><%= awards[i].num %></td>
+          <td><a href="/hasher/<%= awardsToAdd[i].hasher_id _%>"><%= awardsToAdd[i].hash_name %></a></td>
+          <td><%= awardsToAdd[i].title %></td>
+          <td><%= awardsToAdd[i].type %></td>
+          <td><%= awardsToAdd[i].num %></td>
         </tr>
       <% } %>
     <% } else { %>

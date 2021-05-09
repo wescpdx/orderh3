@@ -81,6 +81,15 @@ router.post("/:id/add", function(req, res, next) {
     return list;
   };
 
+  const listOfAwards = function(postData) {
+    let list = [];
+    let keys = Object.keys(postData).filter((key) => key.includes("honor"));
+    for (const key of keys) {
+      list.push(parseInt(key.replace("honor-", "")));
+    }
+    return list;
+  };
+
   const listOfAwardDeliveries = function(postData, eventId) {
     let list = [];
     let keys = Object.keys(postData).filter((key) => key.includes("hasher"));
@@ -110,6 +119,9 @@ router.post("/:id/add", function(req, res, next) {
   } else if (req.body.form === "add_award") {
     h3db.addAwardDeliveryAll(listOfAwardDeliveries(req.body, parseInt(req.params.id)))
     .then(next());
+  } else if (req.body.form === "remove_award") {
+    h3db.removeAwardDelivery(listOfAwards(req.body))
+    .then(next());
   } else {
     next();
   }
@@ -123,7 +135,7 @@ router.all("/:id/add", function(req, res, next) {
     return h3db.fetchHonorsDueByEvent(req.params.id);
   })
   .then((awards) => {
-    res.locals.awards = awards || [];
+    res.locals.awardsToAdd = awards || [];
     return h3db.fetchHasherListExceptEvent(req.params.id);
   })
   .then((unhashers) => {
