@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/honors-due', function(req, res, next) {
-  h3db.reportOnHonorsDue(3).then((list) => {
+  h3db.fetchHonorsEarnedNextByKennel(3).then((list) => {
     res.render('reports/honors-due', {
       list: list || [],
     });

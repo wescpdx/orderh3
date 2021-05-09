@@ -3,6 +3,7 @@
   <h2><%= hasher.hash_name %></h2>
 
   <form id="edit_hasher_form" target="_self" method="post">
+    <input type="hidden" id="form" name="form" value="edit_hasher" />
     <div class="input_box">
       <label for="real_name">Real Name:</label>
       <input type="text" id="real_name" name="real_name" value="<%= hasher.real_name %>" />

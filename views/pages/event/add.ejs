@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+  <%- include('../../partials/header'); %>
+</header>
+
+<main>
+
+  <h1>Edit Attendance</h1>
+  <p><a href="./">Return to event</a></p>
+
+  <h3>Add hasher</h3>
+  <p>To mark an attending hasher as hare or hedi, remove them, then add them again
+    with the appropriate boxes checked.</p>
+  <%- include('../../partials/add-hasher-form'); %>
+
+  <h3>Add award delivery</h3>
+  <p>Only awards earned by hashers attending this event are included. If you don't
+    see an award you expect, make sure the hasher's attendance record is complete,
+    and that the hasher is showing as attending this event.</p>
+  <%- include('../../partials/add-award-form'); %>
+
+  <h3>Remove hasher</h3>
+  <%- include('../../partials/remove-hasher-form'); %>
+
+</main>
+
+  <%- include('../../partials/footer'); %>
+
+</body>
+</html>

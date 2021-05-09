@@ -3,6 +3,7 @@
   <table>
     <tr class="list_header">
       <td>Date Given</td>
+      <td>Hasher</td>
       <td>Type</td>
       <td>Number</td>
       <td>Title</td>
@@ -11,6 +12,7 @@
     <% for (let i=0, l=awards.length; i < l; i++) { %>
       <tr class="list_item">
         <td><%= awards[i].ev_date %></td>
+        <td><a href="/hasher/<%= awards[i].hasher_id _%>"><%= awards[i].hash_name %></a></td>
         <td><%= awards[i].type %></td>
         <td><%= awards[i].num %></td>
         <td><%= awards[i].title %></td>

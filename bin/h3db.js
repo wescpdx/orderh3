@@ -14,7 +14,17 @@ const toIsoDate = function(dd) {
     dd = new Date(dd);
   }
   return `${dd.getFullYear()}-${('' + dd.getMonth()).padStart(2, '0')}-${('' + dd.getDate()).padStart(2, '0')}`;
-}
+};
+
+const parseHasherList = function(list) {
+  if (typeof list === "number") {
+    return list + "";
+  }
+  if (list instanceof Array) {
+    return list.filter(ele => typeof ele === "number").join(",");
+  }
+  return "";
+};
 
 const validUserObject = function(user) {
   if (!user.key) {
@@ -30,7 +40,7 @@ const validUserObject = function(user) {
     return false;
   }
   return true;
-}
+};
 
 const validHasherObject = function(hasher) {
   if (typeof hasher.id !== "number") {
@@ -38,7 +48,45 @@ const validHasherObject = function(hasher) {
     return false;
   }
   return true;
-}
+};
+
+const validHasherLinkData = function(linkData) {
+  if (typeof linkData.event !== "number") {
+    log.logError(`h3db.validHasherLinkData: Invalid event id: ${linkData.event} of type ${typeof linkData.event}`);
+    console.log(`DEBUG::linkData=${JSON.stringify(linkData)}`);
+    return false;
+  }
+  if (typeof linkData.hasher !== "number") {
+    log.logError(`h3db.validHasherLinkData: Invalid hasher id: ${linkData.hasher} of type ${typeof linkData.hasher}`);
+    return false;
+  }
+  if (typeof linkData.hare !== "boolean") {
+    log.logError(`h3db.validHasherLinkData: Invalid hare flag: ${linkData.hare} of type ${typeof linkData.hare}`);
+    return false;
+  }
+  if (typeof linkData.jedi !== "boolean") {
+    log.logError(`h3db.validHasherLinkData: Invalid jedi flag: ${linkData.jedi} of type ${typeof linkData.jedi}`);
+    return false;
+  }
+  return true;
+};
+
+const validAwardLinkData = function(linkData) {
+  if (typeof linkData.event !== "number") {
+    log.logError(`h3db.validAwardLinkData: Invalid event id: ${linkData.event} of type ${typeof linkData.event}`);
+    console.log(`DEBUG::linkData=${JSON.stringify(linkData)}`);
+    return false;
+  }
+  if (typeof linkData.hasher !== "number") {
+    log.logError(`h3db.validAwardLinkData: Invalid hasher id: ${linkData.hasher} of type ${typeof linkData.hasher}`);
+    return false;
+  }
+  if (typeof linkData.honor !== "number") {
+    log.logError(`h3db.validAwardLinkData: Invalid hare flag: ${linkData.hare} of type ${typeof linkData.hare}`);
+    return false;
+  }
+  return true;
+};
 
 const validEventObject = function(event) {
   if (typeof event.id !== "number") {
@@ -46,7 +94,7 @@ const validEventObject = function(event) {
     return false;
   }
   return true;
-}
+};
 
 const h3db = {
 
@@ -230,6 +278,25 @@ const h3db = {
     }
   },
 
+  fetchHasherListExceptEvent: async function(id) {
+    try {
+      const res = await pool.query(`SELECT id, real_name, hash_name FROM hasher
+        WHERE id NOT IN (SELECT hasher FROM event_hashers WHERE event = $1)
+        ORDER BY hash_name`, [id]);
+      log.logVerbose(`h3db.fetchHasherList: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        return res.rows;
+      } else if (res.rowCount === 0) {
+        return [];
+      } else {
+        throw(new Error(`h3db.fetchHasherList: Failure to query for event id='${id}' in database.`));
+      }
+    } catch(e) {
+      log.logError('h3db.fetchHasherList: Error querying database - ' + e.message);
+      return undefined;
+    }
+  },
+
   fetchHasherListBySearchTerm: async function(term) {
     try {
       const res = await pool.query(`SELECT id, real_name, hash_name
@@ -289,10 +356,11 @@ const h3db = {
 
   fetchAwardListByEventId: async function(id) {
     try {
-      const res = await pool.query(`SELECT h.type, h.num, h.title, TO_CHAR(e.ev_date, 'yyyy-mm-dd') as ev_date
+      const res = await pool.query(`SELECT hh.id AS hasher_id, hh.hash_name, h.type, h.num, h.title, TO_CHAR(e.ev_date, 'yyyy-mm-dd') as ev_date
         FROM honor_delivery d
         JOIN honor_def h ON d.honor = h.id
         JOIN event e ON d.event = e.id
+        JOIN hasher hh ON d.hasher = hh.id
         WHERE d.event = $1`, [ id ]);
       log.logVerbose(`h3db.fetchAwardListByEventId: ${res.command} query issued, ${res.rowCount} rows affected`);
       if (res.rowCount > 0) {
@@ -374,7 +442,7 @@ const h3db = {
       return { success: false, error: e.message, stack: e.stack };
     }
   },
-  
+
   updateEvent: async function(eventData) {
     if (!validEventObject(eventData)) {
       log.logError('h3db.updateEvent: Invalid event data.');
@@ -395,6 +463,124 @@ const h3db = {
     } catch(e) {
       log.logError('h3db.updateEvent: Error querying database -' + e.message);
       return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
+  addHasherToEvent: async function(linkData) {
+    if (!validHasherLinkData(linkData)) {
+      log.logError('h3db.addHasherToEvent: Invalid link data.');
+      return;
+    }
+    try {
+      const res = await pool.query(`INSERT INTO event_hashers (event, hasher, hare, jedi)
+        VALUES($1, $2, $3, $4)`,
+        [linkData.event, linkData.hasher, linkData.hare, linkData.jedi]);
+      log.logVerbose(`h3db.addHasherToEvent: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        log.logInfo(`Successfully linked hasher ${linkData.hasher} to event ${linkData.event}`);
+        return { success: true };
+      } else {
+        throw(new Error(`Failure to link hasher ${linkData.hasher} to event ${linkData.event} in database, zero rows affected.`));
+      }
+    } catch(e) {
+      log.logError('h3db.addHasherToEvent: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
+  addAwardDelivery: async function(linkData) {
+    console.log(`LINK data::${JSON.stringify(linkData)}`);
+    if (!validAwardLinkData(linkData)) {
+      log.logError('h3db.addAwardDelivery: Invalid link data.');
+      return;
+    }
+    try {
+      const res = await pool.query(`INSERT INTO honor_delivery (honor, hasher, event)
+        VALUES($1, $2, $3)`,
+        [linkData.honor, linkData.hasher, linkData.event]);
+      log.logVerbose(`h3db.addAwardDelivery: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        log.logInfo(`Successfully linked award ${linkData.honor} to event ${linkData.event}`);
+        return { success: true };
+      } else {
+        throw(new Error(`Failure to link award ${linkData.honor} to event ${linkData.event} in database, zero rows affected.`));
+      }
+    } catch(e) {
+      log.logError('h3db.addAwardDelivery: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
+  addAwardDeliveryAll: async function(linkArray) {
+    if (!linkArray instanceof Array) {
+      log.logError('h3db.addAwardDeliveryAll: Invalid link data.');
+      return;
+    }
+    try {
+      console.log(`LINK ARRAY::${JSON.stringify(linkArray)}`);
+      const resultArray = [];
+      for (const i in linkArray) {
+        resultArray.push(await h3db.addAwardDelivery(linkArray[i]));
+      }
+      return resultArray;
+    } catch(e) {
+      log.logError('h3db.addAwardDeliveryAll: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
+  removeHashersFromEvent: async function(hasherList, eventId) {
+    const scrubbedHasherList = parseHasherList(hasherList);
+    if (typeof eventId !== "number") {
+      log.logError('h3db.removeHashersFromEvent: Invalid event id.');
+      return;
+    }
+    try {
+      console.log(`QUERY::DELETE FROM event_hashers WHERE hasher IN (${scrubbedHasherList}) AND event = ${eventId}`);
+      const res = await pool.query(`DELETE FROM event_hashers WHERE hasher IN (${scrubbedHasherList}) AND event = $1`,
+        [eventId]);
+      log.logVerbose(`h3db.removeHashersFromEvent: ${res.command} query issued, ${res.rowCount} rows affected`);
+      if (res.rowCount > 0) {
+        log.logInfo(`Successfully unlinked hashers ${scrubbedHasherList} from event ${eventId}`);
+        return { success: true };
+      } else {
+        throw(new Error(`Failure to unlink hashers ${scrubbedHasherList} from event ${eventId} in database, zero rows affected.`));
+      }
+    } catch(e) {
+      log.logError('h3db.removeHashersFromEvent: Error querying database -' + e.message);
+      return { success: false, error: e.message, stack: e.stack };
+    }
+  },
+
+  fetchHonorsEarnedNextByKennel: async function(kennel) {
+    if (!kennel > 0) {
+      log.logError('h3db.fetchHonorsEarnedNextByKennel: Invalid kennel ID.');
+      return;
+    }
+    try {
+      const res = await pool.query(`SELECT hasher_id, hash_name, title, num, type
+        FROM honors_earned_next WHERE kennel = $1`, [kennel]);
+      log.logVerbose(`h3db.fetchHonorsEarnedNextByKennel: ${res.command} query issued, ${res.rowCount} rows affected`);
+      return res.rows;
+    } catch(e) {
+      log.logError('h3db.fetchHonorsEarnedNextByKennel: Error querying database -' + e.message);
+    }
+  },
+
+  fetchHonorsDueByEvent: async function(eventId) {
+    if (!eventId > 0) {
+      log.logError('h3db.fetchHonorsDueByEvent: Invalid event ID.');
+      return;
+    }
+    try {
+      const res = await pool.query(`SELECT a.hasher_id, a.honor_id, a.hash_name, a.title, a.num, a.type
+        FROM honors_earned a
+        JOIN event_hashers eh ON eh.hasher = a.hasher_id
+        WHERE eh.event = $1`, [eventId]);
+      log.logVerbose(`h3db.fetchHonorsDueByEvent: ${res.command} query issued, ${res.rowCount} rows affected`);
+      return res.rows;
+    } catch(e) {
+      log.logError('h3db.fetchHonorsDueByEvent: Error querying database -' + e.message);
     }
   },
 
@@ -422,51 +608,6 @@ const h3db = {
     eventData.awards = await h3db.fetchAwardListByEventId(id);
     return eventData;
   },
-
-  reportOnHonorsDue: async function(kennel) {
-    if (!kennel > 0) {
-      log.logError('h3db.reportOnHonorsDue: Invalid kennel ID.');
-      return;
-    }
-    try {
-      const res = await pool.query(`
-          SELECT a.hasher_id, a.hash_name, hd.title, hd.num, hd.type
-          FROM hasher_attendance a
-          JOIN honor_def hd
-           ON a.hashes > hd.num
-          LEFT OUTER JOIN honor_delivery hdd
-           ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
-          WHERE hd.kennel = $1
-           AND hd.type = 'hash'
-           AND hdd.id IS NULL
-        UNION
-          SELECT a.hasher_id, a.hash_name, hd.title, hd.num, hd.type
-          FROM hasher_hares a
-          JOIN honor_def hd
-           ON a.hares > hd.num
-          LEFT OUTER JOIN honor_delivery hdd
-           ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
-          WHERE hd.kennel = $1
-           AND hd.type = 'hare'
-           AND hdd.id IS NULL
-        UNION
-          SELECT a.hasher_id, a.hash_name, hd.title, hd.num, hd.type
-          FROM hasher_jedi a
-          JOIN honor_def hd
-           ON a.jedi > hd.num
-          LEFT OUTER JOIN honor_delivery hdd
-           ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
-          WHERE hd.kennel = $1
-           AND hd.type = 'jedi'
-           AND hdd.id IS NULL
-        `, [kennel]);
-      log.logVerbose(`h3db.reportOnHonorsDue: ${res.command} query issued, ${res.rowCount} rows affected`);
-      return res.rows;
-    } catch(e) {
-      log.logError('h3db.reportOnHonorsDue: Error querying database -' + e.message);
-    }
-  }
-
 
 };
 

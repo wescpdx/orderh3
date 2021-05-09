@@ -1,0 +1,47 @@
+
+<div id="remove_hasher_form">
+  <form id="edit_event_form" target="_self" method="post">
+    <input type="hidden" id="form" name="form" value="remove_hasher" />
+    <table>
+      <tr class="list_header">
+        <td></td>
+        <td>Hash Name</td>
+        <td>Real Name</td>
+        <% if (typeof locals.hashers[0].hare !== "undefined") { %>
+          <td>Hare?</td>
+        <% } %>
+        <% if (typeof locals.hashers[0].jedi !== "undefined") { %>
+          <td>Jedi?</td>
+        <% } %>
+      </tr>
+    <% if (hashers && hashers.length > 0) { %>
+      <% for (let i=0, l=hashers.length; i < l; i++) { %>
+        <tr class="list_item">
+          <td>
+            <div class="input_box">
+              <input type="checkbox"
+               id="hasher-<%= hashers[i].id _%>"
+               name="hasher-<%= hashers[i].id _%>"
+               value="<%= hashers[i].id _%>"
+               />
+            </div>
+          </td>
+          <td><a href="/hasher/<%= hashers[i].id _%>"><%= hashers[i].hash_name %></a></td>
+          <td><%= hashers[i].real_name %></td>
+          <% if (typeof locals.hashers[0].hare !== "undefined") { %>
+            <td><%= hashers[i].hare ? "YES" : "" %></td>
+          <% } %>
+          <% if (typeof locals.hashers[0].jedi !== "undefined") { %>
+            <td><%= hashers[i].jedi ? "YES" : "" %></td>
+          <% } %>
+        </tr>
+      <% } %>
+    <% } else { %>
+      <tr>
+        <td>No hashers to show</td>
+      </tr>
+    <% } %>
+    </table>
+    <input id="remove_hasher_submit" type="submit" value="Remove" />
+  </form>
+</div>

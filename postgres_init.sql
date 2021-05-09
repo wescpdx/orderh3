@@ -10,6 +10,11 @@ DROP TABLE IF EXISTS public.honor_def CASCADE;
 DROP TABLE IF EXISTS public.honor_delivery;
 DROP TYPE IF EXISTS permissions CASCADE;
 DROP TABLE IF EXISTS public.auth_user;
+DROP VIEW IF EXISTS hasher_attendance;
+DROP VIEW IF EXISTS hasher_hares;
+DROP VIEW IF EXISTS hasher_jedi;
+DROP VIEW IF EXISTS honors_earned;
+DROP VIEW IF EXISTS honors_earned_next;
 
 CREATE TABLE public.kennel
 (
@@ -154,6 +159,64 @@ JOIN kennel k
 WHERE k.id = 3
  AND eh.jedi
 GROUP BY 1, 2, 3, 4, 5, 6;
+
+CREATE VIEW honors_earned
+AS
+SELECT hd.kennel, a.hasher_id, hd.id AS honor_id, a.hash_name, hd.title, hd.num, hd.type
+FROM hasher_attendance a
+JOIN honor_def hd
+ ON a.hashes >= hd.num
+LEFT OUTER JOIN honor_delivery hdd
+ ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
+WHERE hd.type = 'hash'
+ AND hdd.id IS NULL
+UNION
+SELECT hd.kennel, a.hasher_id, hd.id AS honor_id, a.hash_name, hd.title, hd.num, hd.type
+FROM hasher_hares a
+JOIN honor_def hd
+ ON a.hares >= hd.num
+LEFT OUTER JOIN honor_delivery hdd
+ ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
+WHERE hd.type = 'hare'
+ AND hdd.id IS NULL
+UNION
+SELECT hd.kennel, a.hasher_id, hd.id AS honor_id, a.hash_name, hd.title, hd.num, hd.type
+FROM hasher_jedi a
+JOIN honor_def hd
+ ON a.jedi >= hd.num
+LEFT OUTER JOIN honor_delivery hdd
+ ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
+WHERE hd.type = 'jedi'
+ AND hdd.id IS NULL;
+
+ CREATE VIEW honors_earned_next
+ AS
+ SELECT hd.kennel, a.hasher_id, hd.id AS honor_id, a.hash_name, hd.title, hd.num, hd.type
+ FROM hasher_attendance a
+ JOIN honor_def hd
+  ON a.hashes >= hd.num -1
+ LEFT OUTER JOIN honor_delivery hdd
+  ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
+ WHERE hd.type = 'hash'
+  AND hdd.id IS NULL
+ UNION
+ SELECT hd.kennel, a.hasher_id, hd.id AS honor_id, a.hash_name, hd.title, hd.num, hd.type
+ FROM hasher_hares a
+ JOIN honor_def hd
+  ON a.hares >= hd.num -1
+ LEFT OUTER JOIN honor_delivery hdd
+  ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
+ WHERE hd.type = 'hare'
+  AND hdd.id IS NULL
+ UNION
+ SELECT hd.kennel, a.hasher_id, hd.id AS honor_id, a.hash_name, hd.title, hd.num, hd.type
+ FROM hasher_jedi a
+ JOIN honor_def hd
+  ON a.jedi >= hd.num -1
+ LEFT OUTER JOIN honor_delivery hdd
+  ON hdd.honor = hd.id AND hdd.hasher = a.hasher_id
+ WHERE hd.type = 'jedi'
+  AND hdd.id IS NULL;
 
 -- ==============================================================================
 -- RESET AND INSERT SAMPLE DATA

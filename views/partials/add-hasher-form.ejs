@@ -1,0 +1,28 @@
+
+<div id="add_hasher_form">
+  <form id="edit_event_form" target="_self" method="post">
+    <input type="hidden" id="form" name="form" value="add_hasher" />
+    <div class="input_box">
+      <% if (unhashers && unhashers.length > 0) { %>
+        <label for="hasher">Hasher:</label>
+        <select id="hasher" name="hasher">
+          <option value=""></option>
+          <% for (let i=0, l=unhashers.length; i < l; i++) { %>
+            <option value=<%= unhashers[i].id %> ><%= unhashers[i].hash_name %> (<%= unhashers[i].real_name %>)</option>
+          <% } %>
+        </select>
+      <% } else { %>
+        Error in fetching hasher list.
+      <% } %>
+    </div>
+    <div class="input_box">
+      <input type="checkbox" id="hare" name="hare" value="yes" />
+      <label for="hare">Hare?</label>
+    </div>
+    <div class="input_box">
+      <input type="checkbox" id="jedi" name="jedi" value="yes" />
+      <label for="jedi">Jedi?</label>
+    </div>
+    <input id="add_hasher_submit" type="submit" value="Add" />
+  </form>
+</div>

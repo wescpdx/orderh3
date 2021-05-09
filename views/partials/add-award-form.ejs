@@ -1,0 +1,39 @@
+
+<div id="add_award_form">
+  <form id="edit_event_form" target="_self" method="post">
+    <input type="hidden" id="form" name="form" value="add_award" />
+    <table>
+      <tr class="list_header">
+        <td></td>
+        <td>Hash Name</td>
+        <td>Title</td>
+        <td>Type</td>
+        <td>Number</td>
+      </tr>
+    <% if (awards && awards.length > 0) { %>
+      <% for (let i=0, l=awards.length; i < l; i++) { %>
+        <tr class="list_item">
+          <td>
+            <div class="input_box">
+              <input type="checkbox"
+               id="hasher-<%= awards[i].hasher_id _%>--honor-<%= awards[i].honor_id _%>-"
+               name="hasher-<%= awards[i].hasher_id _%>--honor-<%= awards[i].honor_id _%>-"
+               value="<%= awards[i].hasher_id _%>"
+               />
+            </div>
+          </td>
+          <td><a href="/hasher/<%= awards[i].hasher_id _%>"><%= awards[i].hash_name %></a></td>
+          <td><%= awards[i].title %></td>
+          <td><%= awards[i].type %></td>
+          <td><%= awards[i].num %></td>
+        </tr>
+      <% } %>
+    <% } else { %>
+      <tr>
+        <td>No awards earned by attendees</td>
+      </tr>
+    <% } %>
+    </table>
+    <input id="add_award_submit" type="submit" value="Mark Delivered" />
+  </form>
+</div>
