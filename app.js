@@ -67,6 +67,7 @@ app.use((req, res, next) => {
 // Route handlers
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
+app.use('/about', require('./routes/about'));
 app.use('/profile', require('./routes/profile'));
 app.use('/reports', require('./routes/reports'));
 app.use('/hasher', require('./routes/hasher'));
@@ -84,14 +85,14 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = process.env.ENVIRONMENT === "development" ? err : {};
   if (req.user) {
     res.locals.username =  req.user.name;
   }
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render("error");
 });
 
 module.exports = app;
