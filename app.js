@@ -60,7 +60,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Vars to make available to all views
 app.use((req, res, next) => {
-  res.locals.loggedIn = !!req.user;  // So header can render correctly
+  res.locals.loggedIn = !!req.user; 
+  res.locals.dataEntry = !!auth.isDataEntry(req);
   next();
 })
 

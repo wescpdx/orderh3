@@ -6,10 +6,10 @@
       <td>Kennel</td>
       <td>Number</td>
       <td>Title</td>
-      <% if (typeof locals.events[0].hare !== "undefined") { %>
+      <% if (events && events.length > 0 && typeof locals.events[0].hare !== "undefined") { %>
         <td>Hare?</td>
       <% } %>
-      <% if (typeof locals.events[0].jedi !== "undefined") { %>
+      <% if (events && events.length > 0 && typeof locals.events[0].jedi !== "undefined") { %>
         <td>Jedi?</td>
       <% } %>
     </tr>

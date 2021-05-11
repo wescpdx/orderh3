@@ -7,6 +7,10 @@ const auth = {
     return req.user && req.user.uid ? true : false;
   },
 
+  isDataEntry: function(req) {
+    return (req.isAuthenticated() && (req.user.permissions === "data_entry" || req.user.permissions === "admin"));
+  },
+
   getUserData: async function(key) {
     log.logVerbose(`auth.getUserData: Fetching data for key = ${key}`);
     const rows = await db.fetchUserByAuth(key);

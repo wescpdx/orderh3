@@ -263,7 +263,7 @@ const h3db = {
   fetchHasherListByMostRecent: async function(id) {
     try {
       const res = await pool.query(`SELECT id, real_name, hash_name
-        FROM hasher ORDER BY updated LIMIT 10`);
+        FROM hasher ORDER BY updated DESC LIMIT 10`);
       log.logVerbose(`h3db.fetchHasherListByMostRecent: ${res.command} query issued, ${res.rowCount} rows affected`);
       if (res.rowCount > 0) {
         return res.rows;
@@ -300,7 +300,7 @@ const h3db = {
   fetchHasherListBySearchTerm: async function(term) {
     try {
       const res = await pool.query(`SELECT id, real_name, hash_name
-        FROM hasher WHERE real_name ILIKE $1 OR hash_name ILIKE $1`, [ `%${term}%` ]);
+        FROM hasher WHERE real_name ILIKE $1 OR hash_name ILIKE $1 OR fb_name ILIKE $1`, [ `%${term}%` ]);
       log.logVerbose(`h3db.fetchHasherListBySearchTerm: ${res.command} query issued, ${res.rowCount} rows affected`);
       if (res.rowCount > 0) {
         return res.rows;
@@ -377,10 +377,6 @@ const h3db = {
   },
 
   createHasher: async function(hasher) {
-    if (!validHasherObject(hasher)) {
-      log.logError('h3db.createHasher: Invalid hasher data.');
-      return;
-    }
     try {
       const res = await pool.query(`INSERT INTO hasher (real_name, hash_name, fb_name, fb_url, kennel, notes, updated)
         VALUES ($1, $2, $3, $4, $5, $6, NOW())`,

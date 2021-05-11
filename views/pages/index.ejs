@@ -14,8 +14,15 @@
     <p>Our goal today is to track honors for Stumptown.</p>
 
     <% if (!loggedIn) { %>
-    <p><a href="/auth/google"><img src="/images/btn_google_signin_light_normal_web.png" /></a></p>
+      <p><a href="/auth/google"><img src="/images/btn_google_signin_light_normal_web.png" /></a></p>
     <% } %>
+
+    <% if (loggedIn && !dataEntry) { %>
+      <p>Your user account has not yet been approved. Please make sure you have added your name
+        and email address on the Profile screen and an admin will review your request in due time.
+      </p>
+    <% } %>
+
 
 </main>
 
